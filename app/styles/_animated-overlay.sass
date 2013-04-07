@@ -1,0 +1,20 @@
+$overlayTransition: 1s ease margin-bottom
+
+.animated-overlay
+	.bd
+		position: relative
+		overflow: hidden
+	.overlay
+		width: 100%
+		position: absolute
+		bottom: 0
+		height: 80px
+		margin-bottom: -80px
+		@include transition($overlayTransition)
+		background: rgba(0, 0, 0, .5)
+		background-opacity: .5
+		color: white
+	.bd:hover .overlay,
+	.bd.hover .overlay
+		margin-bottom: 0 !important
+		@include transition($overlayTransition)

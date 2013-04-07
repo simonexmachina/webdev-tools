@@ -1,0 +1,42 @@
+mixin projectImage(dir, image, dimensions, extension, alt, disableRetina)
+	- extension = extension || 'jpg'
+	- alt = alt || image.replace(/^[0-9.]+/, '').replace(/-/g, ' ')
+	- var mediaQuery = '-webkit-min-device-pixel-ratio: 2.0'
+	- var first = image + '.' + extension
+	- var retina = image + '@2x.' + extension
+	- var others = disableRetina ? [] : [{image: retina, at: mediaQuery}]
+	if dimensions
+		- var width = dimensions[0] || dimensions
+		- var height = dimensions[1] || ''
+		- var columns = dimensions[2] || 12
+		- var container = columns * 80 - 20
+		- width = (width / container) * 100 + '%'
+		- height = height && height + 'px'
+	mixin picturefill(dir, first, others, [width, height], alt)
+
+mixin retinaImage(dir, image, dimensions, extension, alt)
+	- extension = extension || 'jpg'
+	- alt = alt || image.replace(/^\d+/, '').replace(/-/g, ' ')
+	- var mediaQuery = '-webkit-min-device-pixel-ratio: 2.0'
+	//- - var first = image + (extension ? '@2x.' + extension : '')
+	- var first = image + (extension ? '.' + extension : '')
+	- var retina = image + '@2x.' + extension
+	- var others = [{image: retina, at: mediaQuery}]
+	mixin picturefill(dir, first, others, dimensions, alt)
+
+mixin picturefill(dir, first, others, dimensions, alt)
+	- dir = dir ? dir + '/' : ''
+	- alt = alt || null
+	- dimensions = typeof dimensions === 'string' ? [dimensions, ''] : dimensions ? dimensions : ''
+	if dimensions
+		- var style = (dimensions[0] ? "width:" + dimensions[0] + "; " : '') + (dimensions[1] ? "height:" + dimensions[1] + ";" : '')
+	- var klass = (style ? 'sized' : '')
+	- var id = first.replace(/(.*)\..*?$/g, '$1').replace(/^0?([0-9.]+)-(.*)/, '$2-$1').replace('.', '-')
+	div.picturefill.image(id=id, data-picture, data-alt=alt, style=style, class=klass)
+		- var file = dir + first
+		div(data-src='#{file}?m=#{fileModTime(file)}')
+		- for image in others
+			- var file = dir + image.image
+			div(data-src="#{file}?m=#{fileModTime(file)}", data-media='(#{image.at})', class=image.class)
+		noscript
+			img(src=first, alt=alt)
